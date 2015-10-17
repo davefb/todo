@@ -1,0 +1,58 @@
+<html><head>
+    <style>
+      #thelist li {
+        background-color: #00ffff;
+      }
+      #thelist a {
+        float: right;
+      }
+    </style>
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+  </head><body>
+    <form action="#" id="todoAddForm">
+      <input type="text" id="todoAddText">
+      <input type="submit" value="Add" id="todoAdd">
+    </form>
+    <ul id="thelist">
+      {% for item in items %}
+       <li data_id="{{item.id}}"> {{ item.item_text }} <a href="#" onclick="listRemove(this)">remove</a> </li>
+      {% endfor %}
+    </ul>
+
+    <script>
+
+
+
+      var listref = document.getElementById("thelist");
+
+      listRemove = function(k){
+        var item_id = k.parentElement.attributes["data_id"].value;
+
+        $.ajax("./remove/"+item_id).done(function(data){
+
+              $(k).parent().remove();
+        });
+      };
+
+      function listAdd(event){
+
+        var todoItemText =  $("#todoAddText").val();
+
+        $.ajax("./add", {dataType: "json",data:{text:todoItemText}})
+            .done(function(data){
+                            var todoItem = $("<li data_id=\""+  data["id"] +"\">"+todoItemText+" <a href=\"#\" onclick=\"listRemove(this)\">remove</a> </li>");
+                            $("#thelist").append(todoItem);
+            });
+
+       };
+
+    $("#todoAddForm").submit(function(ev){
+        listAdd(ev);
+        $("#todoAddText").val("");
+        return false;
+    });
+    </script>
+
+
+
+</body></html>
